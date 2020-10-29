@@ -3,7 +3,7 @@ const glob = require("glob")
 const semver = require('semver')
 
 export class Pkg {
-  path: string
+  #path: string
   repository!: string
   category!: string
   pn!: string
@@ -14,11 +14,11 @@ export class Pkg {
   mostRecentPv!: string
 
   constructor(packagePath: string) {
-    this.path = packagePath
+    this.#path = packagePath
   }
 
   packageRepCatName() {
-    let segments = this.path.split(path.sep)
+    let segments = this.#path.split(path.sep)
     this.repository = segments[1]
     this.category = segments[3]
     this.pn = segments[4]
@@ -36,7 +36,7 @@ export class Pkg {
   packageContents() {
     // check if one or more exheres exists, an empty list was in the results, because glob 
     // found a folder without exheres (hasufell/packages/net-www/exlibs, old exlibs folder?)
-    let exheres = glob.sync(`${this.path}/*.exheres-0`)
+    let exheres = glob.sync(`${this.#path}/*.exheres-0`)
     if (exheres.length) {
       if (exheres.length < 2) {
         this.exheres = this.pathCleaner(exheres).toString()
@@ -45,10 +45,10 @@ export class Pkg {
       }
     }
     // check if exlib exists
-    let exlib = glob.sync(`${this.path}/*.exlib`)
+    let exlib = glob.sync(`${this.#path}/*.exlib`)
     exlib.length ? this.exlib = this.pathCleaner(exlib).toString(): this.exlib = null
     // and if the package has additional files
-    let files = glob.sync(`${this.path}/files/**`)
+    let files = glob.sync(`${this.#path}/files/**`)
     files.length ? this.files = this.pathCleaner(files) : this.files = null
   }
 
