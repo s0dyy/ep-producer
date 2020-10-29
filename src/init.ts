@@ -9,7 +9,6 @@ import { Pkg } from "./Pkg";
 
 async function cloneRepositories() {
   const groupsId = ['4'] 
-  //const groupsId = ['2', '3', '4'] 
   const weirdRepositories = ["musl"]
   fs.mkdirSync("./repositories")
   // loop on each group, get the url of each project and clone the repos
@@ -20,22 +19,23 @@ async function cloneRepositories() {
       if (!weirdRepositories.includes(p.name)) { 
         await git.cwd(`${process.cwd()}/repositories`).clone(p.http_url_to_repo, p.name)
         console.log(`Cloning into 'repositories/${p.name}'...`)
+        repositories.push(p.name)
       }
     }
   }
   findPathsPackages()
 }
 
-//async function pullRepositories() {
+async function pullRepositories() {
   // check remote and pull if necessary
-  //for (const repository of repositories) {
-    //var diff = await git.cwd(`${process.cwd()}/repositories/${repository}`).diff("--name-only", ["--"], ["origin/master"])
-    //if (diff.length) {
-      //await git.pull(console.log)
-    //}
-  //}
-  //findPathsPackages()
-//}
+  for (const repository of repositories) {
+    var diff = await git.cwd(`${process.cwd()}/repositories/${repository}`).diff("--name-only", ["--"], ["origin/master"])
+    if (diff.length) {
+      await git.pull(console.log)
+    }
+  }
+  findPathsPackages()
+}
 
 async function findPathsPackages() {
   // create an array containing the path of each package
@@ -64,13 +64,12 @@ function buildObjects(packagesPaths: Array<string>) {
 async function sendToPulsar(packages: Array<Pkg>) {
   console.log(packages)
   console.log(`${packages.length} packages have been processed and sent to pulsar`)
-  //init()
+  init()
 }
 
+const repositories: Array<string> = []
 function init() {
-  //sleep.sleep(SLEEP)
-  //!fs.existsSync("./repositories") ? cloneRepositories() : pullRepositories()
-  if (!fs.existsSync("./repositories")) { cloneRepositories() }
+  !fs.existsSync("./repositories") ? cloneRepositories() : pullRepositories()
 }
 
 init()
