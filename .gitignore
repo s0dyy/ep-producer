@@ -104,8 +104,7 @@ dist
 .tern-port
 
 # Typescript
-js/*.map
-js/ts.js
+build
 # Exherbo repositories
 repositories
 # Pulsar
