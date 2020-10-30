@@ -4,7 +4,7 @@
   "description": "Browse Exherbo Linux packages",
   "main": "src/init.js",
   "scripts": {
-    "start": "tsc && rm -rf repositories && node build/init.js",
+    "start": "tsc && rm -rf repositories && node build/bin/ep-producer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
