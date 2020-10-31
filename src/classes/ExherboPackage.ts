@@ -65,7 +65,7 @@ export class ExherboPackage {
           // TODO: Find a solution for invalid versions, ep-worker will not process packages
           // with mostRecentVersionIsValid = false (not a priority, ~500 packages, most of them are related to KDE or Perl).
           this.mostRecentVersionIsValid = false
-          console.log(`WARNING: No valid version found for ${this.category}/${this.name}.`)
+          //console.log(`WARNING: No valid version found for ${this.category}/${this.name}.`)
         }
       }
     // Multiple exheres.
@@ -89,7 +89,7 @@ export class ExherboPackage {
         semver.rsort(versions)
       } else {
         // TODO: Same as above.
-        console.log(`WARNING: No valid version found for ${this.category}/${this.name}.`)
+        //console.log(`WARNING: No valid version found for ${this.category}/${this.name}.`)
       }
       // Push scm and no valid if exists.
       if (notValidForSort.length) { 

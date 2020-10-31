@@ -2,8 +2,7 @@ const fs = require("fs")
 const axios = require('axios');
 const simpleGit = require('simple-git');
 const git = simpleGit();
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const glob = require("glob")
 
 import { ExherboPackage } from "../src/classes/ExherboPackage"
 import { Upstream } from "../src/classes/Upstream"
@@ -47,14 +46,8 @@ async function pullRepositories(): Promise<void> {
   findPathsPackages()
 }
 
-async function findPathsPackages(): Promise<void> {
-  // Create an array containing the path of each package.
-  const { stdout, stderr } = await exec('ls -d repositories/*/packages/*/*');
-  if (stderr) { 
-    console.log(stderr)
-    process.exit() 
-  }
-  const packagesPaths = stdout.trim().split("\n").sort() 
+function findPathsPackages(): void {
+  const packagesPaths = glob.sync("repositories/*/packages/*/*")
   buildObjects(packagesPaths)
 }
 
@@ -74,8 +67,8 @@ function buildObjects(packagesPaths: Array<string>): void {
 }
 
 function sendToPulsar(packages: Package[]): void {
-  console.dir(packages)
-  //init()
+  //console.dir(packages)
+  init()
 }
 
 // Filled during the clone and used in the next loops for the pull.
