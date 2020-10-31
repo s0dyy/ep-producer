@@ -2,7 +2,7 @@ const path = require('path');
 const glob = require("glob")
 const semver = require('semver')
 
-export class ExherboPackage {
+export class ExherboContents {
   #path: string
   repository!: string
   category!: string
@@ -11,8 +11,8 @@ export class ExherboPackage {
   exlib!: string|null
   files!: Array<string>|null
   versions!: string|Array<string>
-  mostRecentVersion!: string
-  mostRecentVersionIsValid!: boolean
+  bestVersion!: string
+  bestIsValid!: boolean
   upstreamSource!: string
 
   constructor(packagePath: string) {
@@ -54,17 +54,17 @@ export class ExherboPackage {
       let pv = semver.coerce(this.exheres, '*')
       if (pv.raw == "0.0.0" && this.exheres.includes("scm")) {
         this.versions = "scm"
-        this.mostRecentVersion = "scm"
-        this.mostRecentVersionIsValid = false
+        this.bestVersion = "scm"
+        this.bestIsValid = false
       } else {
         this.versions = pv.raw
-        this.mostRecentVersion = pv.raw
+        this.bestVersion = pv.raw
         if (semver.valid(pv.raw)) {
-          this.mostRecentVersionIsValid = true
+          this.bestIsValid = true
         } else {
           // TODO: Find a solution for invalid versions, ep-worker will not process packages
           // with mostRecentVersionIsValid = false (not a priority, ~500 packages, most of them are related to KDE or Perl).
-          this.mostRecentVersionIsValid = false
+          this.bestIsValid = false
           //console.log(`WARNING: No valid version found for ${this.category}/${this.name}.`)
         }
       }
@@ -99,8 +99,8 @@ export class ExherboPackage {
       } 
       if (scm) { versions.push("scm") }
       this.versions = versions
-      this.mostRecentVersion = versions[0]
-      notValidForSort.length ? this.mostRecentVersionIsValid = false : this.mostRecentVersionIsValid = true
+      this.bestVersion = versions[0]
+      notValidForSort.length ? this.bestIsValid = false : this.bestIsValid = true
     }
   }
 }

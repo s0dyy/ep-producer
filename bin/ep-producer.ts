@@ -4,8 +4,8 @@ const simpleGit = require('simple-git');
 const git = simpleGit();
 const glob = require("glob")
 
-import { ExherboPackage } from "../src/classes/ExherboPackage"
-import { Upstream } from "../src/classes/Upstream"
+import { ExherboContents } from "../src/classes/ExherboContents"
+import { ExherboSources } from "../src/classes/ExherboSources"
 import { Package } from "../src/interfaces/Package"
 
 function logToFile(packages: Package[]): void {
@@ -54,21 +54,25 @@ function findPathsPackages(): void {
 function buildObjects(packagesPaths: Array<string>): void {
   const packages = []
   for (const packagePath of packagesPaths) {
-    // Initialize a new pkg object.
-    const pkg = new ExherboPackage(packagePath)
-    pkg.findRepCatName()
-    pkg.findFiles()
-    pkg.findVersions()
-    Upstream.findSource(pkg)
+    // Get the contents of the package (name, version, files...).
+    const cts = new ExherboContents(packagePath)
+    cts.findRepCatName()
+    cts.findFiles()
+    cts.findVersions()
+    // Get the source of the package (name, url ...).
+    const src = new ExherboSources(packagePath)
+    src.findSource()
+    // Merge and pushing to packages array
+    const pkg = {...cts, ...src}
     packages.push(pkg)
   }
-  logToFile(packages)
+  //logToFile(packages)
   sendToPulsar(packages)
 }
 
 function sendToPulsar(packages: Package[]): void {
-  //console.dir(packages)
-  init()
+  console.dir(packages)
+  //init()
 }
 
 // Filled during the clone and used in the next loops for the pull.

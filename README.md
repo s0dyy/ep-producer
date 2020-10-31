@@ -28,6 +28,8 @@ Structure of an object (**WORK IN PROGRESS**)
   ],
   "mostRecentVersion": "0.12.0",
   "mostRecentVersionIsValid": true,
+  "upstreamSource": "github",
+  "upstreamUrl": "https://github.com/sozu-proxy/sozu"
 },
 {
   "repository": "CleverCloud",
@@ -47,6 +49,8 @@ Structure of an object (**WORK IN PROGRESS**)
   "versions": "4.1.3",
   "mostRecentVersion": "4.1.3",
   "mostRecentVersionIsValid": true,
+  "upstreamSource": null,
+  "upstreamUrl": null
 },
 ... 6282 more items
 ```

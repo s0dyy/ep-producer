@@ -6,7 +6,8 @@ export interface Package {
   exlib: string|null
   files: Array<string>|null
   versions: string|Array<string>
-  mostRecentVersion: string
-  mostRecentVersionIsValid: boolean
-  upstreamSource: string
+  bestVersion: string
+  bestIsValid: boolean
+  upstreamSource: string|null
+  upstreamUrl: string|null
 }

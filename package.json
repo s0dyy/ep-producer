@@ -1,5 +1,5 @@
 {
-  "name": "epn-producer",
+  "name": "ep-producer",
   "version": "1.0.0",
   "description": "Browse Exherbo Linux packages",
   "main": "src/init.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/s0dyy/epn-producer.git"
+    "url": "git+https://github.com/s0dyy/ep-producer.git"
   },
   "author": "Maxime Sorin",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/s0dyy/epn-producer/issues"
+    "url": "https://github.com/s0dyy/ep-producer/issues"
   },
-  "homepage": "https://github.com/s0dyy/epn-producer#readme",
+  "homepage": "https://github.com/s0dyy/ep-producer#readme",
   "dependencies": {
     "axios": "^0.20.0",
     "glob": "^7.1.6",
