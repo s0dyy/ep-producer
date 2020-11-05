@@ -3,7 +3,7 @@ const glob = require("glob")
 const semver = require('semver')
 
 export class ExherboContents {
-  #path: string
+  path: string
   repository!: string
   category!: string
   name!: string
@@ -13,14 +13,13 @@ export class ExherboContents {
   versions!: string|Array<string>
   bestVersion!: string
   bestIsValid!: boolean
-  upstreamSource!: string
 
   constructor(packagePath: string) {
-    this.#path = packagePath
+    this.path = packagePath
   }
 
   findRepCatName() {
-    let segments = this.#path.split(path.sep)
+    let segments = this.path.split(path.sep)
     this.repository = segments[1]
     this.category = segments[3]
     this.name = segments[4]
@@ -33,18 +32,16 @@ export class ExherboContents {
         let crop = p.replace(`repositories/${this.repository}/packages/${this.category}/${this.name}/`, '')
         newPaths.push(crop)
       } 
-      return newPaths
+      return newPaths.reverse()
     }
     // Check if one or more exheres exists.
-    let exheres = glob.sync(`${this.#path}/*.exheres-0`)
-    if (exheres.length) { // Because hasufell/packages/net-www/exlibs has no exheres (and maybe others).
-      exheres.length < 2 ? this.exheres = pathCleaner(exheres).toString() : this.exheres = pathCleaner(exheres)
-    }
+    let exheres = glob.sync(`${this.path}/*.exheres-0`)
+    exheres.length < 2 ? this.exheres = pathCleaner(exheres).toString() : this.exheres = pathCleaner(exheres)
     // Check if exlib exists.
-    let exlib = glob.sync(`${this.#path}/*.exlib`)
+    let exlib = glob.sync(`${this.path}/*.exlib`)
     exlib.length ? this.exlib = pathCleaner(exlib).toString(): this.exlib = null
     // And if the package has additional files.
-    let files = glob.sync(`${this.#path}/files/**`)
+    let files = glob.sync(`${this.path}/files/**`)
     files.length ? this.files = pathCleaner(files) : this.files = null
   }
 

@@ -8,9 +8,9 @@ import { ExherboContents } from "../src/classes/ExherboContents"
 import { ExherboSources } from "../src/classes/ExherboSources"
 import { Package } from "../src/interfaces/Package"
 
-function logToFile(packages: Package[]): void {
+function logToFile(packagesPaths: any): void {
   // TODO: make a better logging system later
-  fs.writeFile('build/ep-producer-log.json', JSON.stringify(packages, null, 2), function(err: any) {
+  fs.writeFile('build/ep-producer-log.json', JSON.stringify(packagesPaths, null, 2), function(err: any) {
     if(err) { console.log(err) }
   });
 }
@@ -47,13 +47,17 @@ async function pullRepositories(): Promise<void> {
 }
 
 function findPathsPackages(): void {
-  const packagesPaths = glob.sync("repositories/*/packages/*/*")
+  const packagesPaths = glob.sync("repositories/*/packages/*/*", { ignore: "repositories/*/packages/*/exlibs" })
   buildObjects(packagesPaths)
 }
 
-function buildObjects(packagesPaths: Array<string>): void {
+async function buildObjects(packagesPaths: Array<string>): Promise<void> {
   const packages = []
   for (const packagePath of packagesPaths) {
+    if (!packagePath.length) {
+      console.log(packagePath)
+      process.exit()
+    }
     // Get the contents of the package (name, version, files...).
     const cts = new ExherboContents(packagePath)
     cts.findRepCatName()
@@ -61,17 +65,17 @@ function buildObjects(packagesPaths: Array<string>): void {
     cts.findVersions()
     // Get the source of the package (name, url ...).
     const src = new ExherboSources(packagePath)
-    src.findSource()
+    await src.findSource(cts)
     // Merge and pushing to packages array
     const pkg = {...cts, ...src}
     packages.push(pkg)
   }
-  //logToFile(packages)
+  logToFile(packages)
   sendToPulsar(packages)
 }
 
 function sendToPulsar(packages: Package[]): void {
-  console.dir(packages)
+  //console.dir(packages)
   //init()
 }
 
