@@ -28,29 +28,30 @@ Structure of an object (**WORK IN PROGRESS**)
   ],
   "mostRecentVersion": "0.12.0",
   "mostRecentVersionIsValid": true,
-  "upstreamSource": "github",
+  "upstream": "github",
   "upstreamUrl": "https://github.com/sozu-proxy/sozu"
+  "upstreamRegex": "require github [ user=sozu-proxy force_git_clone=true ] cargo"
 },
 {
+  "path": "repositories/CleverCloud/packages/dev-pecl/memcached",
   "repository": "CleverCloud",
-  "category": "net",
-  "name": "varnish",
-  "exheres": "varnish-4.1.3.exheres-0",
-  "exlib": null,
-  "files": [
-    "files",
-    "files/systemd",
-    "files/systemd/varnish.service",
-    "files/systemd/varnishlog.service",
-    "files/systemd/varnishncsa.service",
-    "files/varnish_reload_vcl",
-    "files/varnish.params"
+  "category": "dev-pecl",
+  "name": "memcached",
+  "exheres": [
+    "memcached-3.1.5.exheres-0",
+    "memcached-2.2.0-r1.exheres-0"
   ],
-  "versions": "4.1.3",
-  "mostRecentVersion": "4.1.3",
-  "mostRecentVersionIsValid": true,
-  "upstreamSource": null,
-  "upstreamUrl": null
+  "exlib": null,
+  "files": null,
+  "versions": [
+    "3.1.5",
+    "2.2.0"
+  ],
+  "bestVersion": "3.1.5",
+  "bestIsValid": true,
+  "upstream": "pecl",
+  "upstreamUrl": "https://pecl.php.net/get/memcached",
+  "upstreamRegex": "require php-pecl [ module=module php_abis=[ 7.0 7.1 7.2 7.3 7.4 ] ]"
 },
 ... 6282 more items
 ```
