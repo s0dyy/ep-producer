@@ -9,7 +9,7 @@ export interface Package {
   versions: string|Array<string>
   bestVersion: string
   bestIsValid: boolean
-  upstreamSource: string|null
-  upstreamReturnRegex: string|null
+  upstream: string|null
   upstreamUrl: string|null
+  upstreamRegex: string|null
 }

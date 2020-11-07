@@ -1,5 +1,5 @@
 export interface Sources {
-  upstreamSource: string|null
-  upstreamReturnRegex: string|null
+  upstream: string|null
   upstreamUrl: string|null
+  upstreamRegex: string|null
 }

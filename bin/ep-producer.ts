@@ -64,8 +64,9 @@ async function buildObjects(packagesPaths: Array<string>): Promise<void> {
     cts.findFiles()
     cts.findVersions()
     // Get the source of the package (name, url ...).
-    const src = new ExherboSources(packagePath)
-    await src.findSource(cts)
+    const src = new ExherboSources(cts)
+    src.setFile()
+    await src.findSource()
     // Merge and pushing to packages array
     const pkg = {...cts, ...src}
     packages.push(pkg)

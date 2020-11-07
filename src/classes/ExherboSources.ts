@@ -7,42 +7,49 @@ import { Contents } from "../interfaces/Contents"
 
 export class ExherboSources {
   #path: string
-  file!: string
-  upstreamSource: null|string = null
-  upstreamReturnRegex: null|string = null
+  #name: string
+  #exheres!: string|Array<string>
+  #exlib!: string|null
+  #file!: string
+  upstream: null|string = null
   upstreamUrl: null|string = null 
+  upstreamRegex: null|string = null
 
-  constructor(packagePath: string) {
-    this.#path = packagePath
+  constructor(cts: Contents) {
+    this.#path = cts.path
+    this.#name = cts.name
+    this.#exheres = cts.exheres
+    this.#exlib = cts.exlib
   }
 
   github(line: string) {
-    this.upstreamSource = "github"
-    this.upstreamReturnRegex = line
+    this.upstream = "github"
+    this.upstreamRegex = line
   }
 
   pecl(line: string) {
-    this.upstreamSource = "pecl"
-    this.upstreamReturnRegex = line
+    this.upstream = "pecl"
+    this.upstreamRegex = line
+    this.upstreamUrl = `https://pecl.php.net/get/${this.#name}`
   }
 
-  setFile(cts: Contents) {
+  setFile() {
     // The file that will be used to find the source (exlib or the most recent exheres).
-    if (cts.exlib == null) {
-      Array.isArray(cts.exheres) ? this.file = `${cts.exheres[0]}` : this.file = `${cts.exheres}`
+    if (this.#exlib == null) {
+      Array.isArray(this.#exheres) ? this.#file = `${this.#exheres[0]}` : this.#file = `${this.#exheres}`
     } else {
-      this.file = `${cts.exlib}`
+      this.#file = `${this.#exlib}`
     }
   }
 
   async findSource() {
     // TODO: Make regex more complex in the future.
     let github = /require.*github/
-    let pecl = /require.*github/
+    let pecl = /require.*pecl/
 
     try {
       const rl = createInterface({
-        input: createReadStream(`${this.#path}/${this.file}`),
+        input: createReadStream(`${this.#path}/${this.#file}`),
       });
 
       // Loop on each row and test the regex.
