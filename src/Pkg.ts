@@ -1,5 +1,4 @@
-export interface Contents {
-  path: string
+export interface Pkg {
   repository: string
   category: string
   name: string
@@ -9,4 +8,7 @@ export interface Contents {
   versions: string|Array<string>
   bestVersion: string
   bestIsValid: boolean
+  upstream: string|null
+  upstreamUrl: string|null
+  upstreamRegex: string|null
 }

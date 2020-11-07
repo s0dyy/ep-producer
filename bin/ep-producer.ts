@@ -1,12 +1,10 @@
-const fs = require("fs")
-const axios = require('axios');
-const simpleGit = require('simple-git');
-const git = simpleGit();
-const glob = require("glob")
-
-import { ExherboContents } from "../src/classes/ExherboContents"
-import { ExherboSources } from "../src/classes/ExherboSources"
-import { Package } from "../src/interfaces/Package"
+import fs from 'fs'
+import axios from 'axios'
+import simpleGit, {SimpleGit} from 'simple-git';
+const git: SimpleGit = simpleGit();
+import glob from 'glob'
+import { PackageSources } from "../src/PackageSources"
+import { Pkg } from "../src/Pkg"
 
 function logToFile(packagesPaths: any): void {
   // TODO: make a better logging system later
@@ -15,7 +13,7 @@ function logToFile(packagesPaths: any): void {
   });
 }
 
-async function cloneRepositories(): Promise<void> {
+async function cloneRepositories() {
   const groupsId = ['4'] 
   //const groupsId = ['2','3','4'] 
   const weirdRepositories = ["musl"]
@@ -35,23 +33,30 @@ async function cloneRepositories(): Promise<void> {
   findPathsPackages()
 }
 
-async function pullRepositories(): Promise<void> {
+async function pullRepositories() {
   // Check remote and pull if necessary.
   for (const repository of repositories) {
-    var diff = await git.cwd(`${process.cwd()}/repositories/${repository}`).diff("--name-only", ["--"], ["origin/master"])
+    var diff = await git.cwd(`${process.cwd()}/repositories/${repository}`).diff(["--name-only", "--", "origin/master"])
     if (diff.length) {
-      await git.pull(console.log)
+      await git.pull()
     }
   }
   findPathsPackages()
 }
 
-function findPathsPackages(): void {
-  const packagesPaths = glob.sync("repositories/*/packages/*/*", { ignore: "repositories/*/packages/*/exlibs" })
+function findPathsPackages() {
+  const packagesPaths = glob.sync("repositories/*/packages/*/*", { ignore: [ 
+    "repositories/*/packages/*/exlibs",
+    // TODO: Fix packages with multiple exlib.
+    "repositories/*/packages/sys-libs/wayland",
+    "repositories/*/packages/x11-drivers/nvidia-drivers",
+    "repositories/*/packages/kde-frameworks/kirigami",
+    "repositories/*/packages/app-office/libreoffice"
+  ] })
   buildObjects(packagesPaths)
 }
 
-async function buildObjects(packagesPaths: Array<string>): Promise<void> {
+async function buildObjects(packagesPaths: string[]) {
   const packages = []
   for (const packagePath of packagesPaths) {
     if (!packagePath.length) {
@@ -59,28 +64,23 @@ async function buildObjects(packagesPaths: Array<string>): Promise<void> {
       process.exit()
     }
     // Get the contents of the package (name, version, files...).
-    const cts = new ExherboContents(packagePath)
-    cts.findRepCatName()
-    cts.findFiles()
-    cts.findVersions()
-    // Get the source of the package (name, url ...).
-    const src = new ExherboSources(packagePath)
-    await src.findSource(cts)
-    // Merge and pushing to packages array
-    const pkg = {...cts, ...src}
+    const pkg = new PackageSources(packagePath)
+    pkg.findFiles()
+    pkg.findVersions()
+    await pkg.findSource()
     packages.push(pkg)
   }
   logToFile(packages)
   sendToPulsar(packages)
 }
 
-function sendToPulsar(packages: Package[]): void {
-  //console.dir(packages)
+function sendToPulsar(packages: Pkg[]) {
+  console.dir(packages)
   //init()
 }
 
 // Filled during the clone and used in the next loops for the pull.
-const repositories: Array<string> = []
+const repositories: string[] = []
 
 function init(): void {
   !fs.existsSync("./repositories") ? cloneRepositories() : pullRepositories()

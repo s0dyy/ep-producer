@@ -1,29 +1,15 @@
-const path = require('path');
-const glob = require("glob")
+import glob from 'glob'
 const semver = require('semver')
 
-export class ExherboContents {
-  path: string
-  repository!: string
-  category!: string
-  name!: string
-  exheres!: string|Array<string>
-  exlib!: string|null
-  files!: Array<string>|null
-  versions!: string|Array<string>
-  bestVersion!: string
-  bestIsValid!: boolean
+import { Package } from "./Package"
 
-  constructor(packagePath: string) {
-    this.path = packagePath
-  }
-
-  findRepCatName() {
-    let segments = this.path.split(path.sep)
-    this.repository = segments[1]
-    this.category = segments[3]
-    this.name = segments[4]
-  }
+export class PackageContents extends Package {
+  exheres: string|Array<string> = ""
+  exlib: string|null = null
+  files: Array<string>|null = null
+  versions: string|Array<string> = ""
+  bestVersion: string = ""
+  bestIsValid: boolean = false
 
   findFiles() {
     var pathCleaner = (paths: Array<string>): Array<string> => {
@@ -39,10 +25,10 @@ export class ExherboContents {
     exheres.length < 2 ? this.exheres = pathCleaner(exheres).toString() : this.exheres = pathCleaner(exheres)
     // Check if exlib exists.
     let exlib = glob.sync(`${this.path}/*.exlib`)
-    exlib.length ? this.exlib = pathCleaner(exlib).toString(): this.exlib = null
+    if (exlib.length) { this.exlib = pathCleaner(exlib).toString() }
     // And if the package has additional files.
     let files = glob.sync(`${this.path}/files/**`)
-    files.length ? this.files = pathCleaner(files) : this.files = null
+    if (files.length) { this.files = pathCleaner(files) }
   }
 
   findVersions() {
@@ -52,17 +38,13 @@ export class ExherboContents {
       if (pv.raw == "0.0.0" && this.exheres.includes("scm")) {
         this.versions = "scm"
         this.bestVersion = "scm"
-        this.bestIsValid = false
       } else {
         this.versions = pv.raw
         this.bestVersion = pv.raw
+        // TODO: Find a solution for invalid versions, ep-worker will not process packages
+        // with mostRecentVersionIsValid = false (not a priority, ~500 packages, most of them are related to KDE or Perl).
         if (semver.valid(pv.raw)) {
           this.bestIsValid = true
-        } else {
-          // TODO: Find a solution for invalid versions, ep-worker will not process packages
-          // with mostRecentVersionIsValid = false (not a priority, ~500 packages, most of them are related to KDE or Perl).
-          this.bestIsValid = false
-          //console.log(`WARNING: No valid version found for ${this.category}/${this.name}.`)
         }
       }
     // Multiple exheres.
@@ -97,7 +79,7 @@ export class ExherboContents {
       if (scm) { versions.push("scm") }
       this.versions = versions
       this.bestVersion = versions[0]
-      notValidForSort.length ? this.bestIsValid = false : this.bestIsValid = true
+      if (!notValidForSort.length) { this.bestIsValid = true }
     }
   }
 }
