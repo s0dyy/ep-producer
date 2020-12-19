@@ -15,7 +15,7 @@ function logToFile(packagesPaths: any): void {
 
 async function cloneRepositories() {
   const groupsId = ['4'] 
-  //const groupsId = ['2','3','4'] 
+  //const groupsId = ['2','3','4']
   const weirdRepositories = ["musl"]
   fs.mkdirSync("./repositories")
   // Loop on each group, get the url of each project and clone the repos.
