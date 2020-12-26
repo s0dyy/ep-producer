@@ -1,12 +1,7 @@
-**EP PROJECT**
-&nbsp;
-
-The main goal is to compare the version of an Exherbo Linux package with the upstream version, and be notified via Slack if a new version is available.
-
 **EP-PRODUCER**
 &nbsp;
 
-Browse Exherbo linux packages, create an object and send it to Apache Pulsar.
+Compare the version of an Exherbo Linux package with the upstream version, and be notified via Slack if a new version is available.
 
 Structure of an object (**WORK IN PROGRESS**)
 ```yaml

@@ -5,6 +5,7 @@ const git: SimpleGit = simpleGit();
 import glob from 'glob'
 import { PackageSources } from "../src/PackageSources"
 import { Pkg } from "../src/Pkg"
+const Pulsar = require('pulsar-client');
 
 function logToFile(packagesPaths: any): void {
   // TODO: make a better logging system later
@@ -74,8 +75,26 @@ async function buildObjects(packagesPaths: string[]) {
   sendToPulsar(packages)
 }
 
-function sendToPulsar(packages: Pkg[]) {
-  console.dir(packages)
+async function sendToPulsar(packages: Pkg[]) {
+  //console.dir(packages)
+
+  const client = new Pulsar.Client({
+    serviceUrl: 'pulsar://localhost:6650',
+  });
+
+  const producer = await client.createProducer({
+    topic: 'my-topic',
+  });
+
+  for (const pkg of packages) {
+    producer.send({pkg});
+  }
+
+  await producer.flush();
+
+  await producer.close();
+  await client.close();
+
   //init()
 }
 
