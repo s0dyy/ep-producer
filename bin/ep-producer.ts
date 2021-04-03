@@ -3,9 +3,7 @@ import axios from 'axios'
 import simpleGit, {SimpleGit} from 'simple-git';
 const git: SimpleGit = simpleGit();
 import glob from 'glob'
-import { PackageSources } from "../src/PackageSources"
-import { Pkg } from "../src/Pkg"
-const Pulsar = require('pulsar-client');
+import { PackageContents } from "../src/PackageContents"
 
 function logToFile(packagesPaths: any): void {
   // TODO: make a better logging system later
@@ -47,12 +45,21 @@ async function pullRepositories() {
 
 function findPathsPackages() {
   const packagesPaths = glob.sync("repositories/*/packages/*/*", { ignore: [ 
+    // TODO: Fix exlibs folder
     "repositories/*/packages/*/exlibs",
     // TODO: Fix packages with multiple exlib.
+    "repositories/*/packages/app-office/libreoffice",
+    "repositories/*/packages/kde-frameworks/kirigami",
     "repositories/*/packages/sys-libs/wayland",
     "repositories/*/packages/x11-drivers/nvidia-drivers",
-    "repositories/*/packages/kde-frameworks/kirigami",
-    "repositories/*/packages/app-office/libreoffice"
+    "repositories/gnome/packages/dev-cpp/libxml++",
+    "repositories/media/packages/app-text/calibre",
+    "repositories/python/packages/dev-python/PyQt5",
+    "repositories/python/packages/dev-python/PyQtWebEngine",
+    "repositories/python/packages/dev-python/sip",
+    "repositories/virtualization/packages/app-virtualization/qemu",
+    // TODO: Fix packages wihtout exheres
+    "repositories/kde/packages/kde/user-manager"
   ] })
   buildObjects(packagesPaths)
 }
@@ -60,40 +67,18 @@ function findPathsPackages() {
 async function buildObjects(packagesPaths: string[]) {
   const packages = []
   for (const packagePath of packagesPaths) {
-    if (!packagePath.length) {
-      console.log(packagePath)
-      process.exit()
-    }
     // Get the contents of the package (name, version, files...).
-    const pkg = new PackageSources(packagePath)
+    const pkg = new PackageContents(packagePath)
     pkg.findFiles()
-    pkg.findVersions()
-    await pkg.findSource()
+    await Promise.all([pkg.findVersions(), pkg.findSource()])
     packages.push(pkg)
   }
   logToFile(packages)
-  sendToPulsar(packages)
+  slackNotifications(packages)
 }
 
-async function sendToPulsar(packages: Pkg[]) {
-  //console.dir(packages)
-
-  const client = new Pulsar.Client({
-    serviceUrl: 'pulsar://localhost:6650',
-  });
-
-  const producer = await client.createProducer({
-    topic: 'my-topic',
-  });
-
-  for (const pkg of packages) {
-    producer.send({pkg});
-  }
-
-  await producer.flush();
-
-  await producer.close();
-  await client.close();
+function slackNotifications(packages: PackageContents[]) {
+  console.dir(packages)
 
   //init()
 }

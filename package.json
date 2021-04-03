@@ -22,10 +22,8 @@
     "glob": "^7.1.6",
     "line-reader": "^0.4.0",
     "path-parse": "^1.0.6",
-    "pulsar-client": "^1.2.0",
     "semver": "^7.3.4",
-    "simple-git": "^2.31.0",
-    "sleep": "^6.3.0"
+    "simple-git": "^2.31.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
